@@ -1,0 +1,234 @@
+/*
+ * 清除浮动
+ */
+
+@mixin clearfix {
+    &:before,
+    &:after {
+        content: "";
+        display: table;
+    }
+    &:after {
+        clear: both;
+        overflow: hidden;
+    }
+}
+
+/* 字体封装
+    12px - 30px;
+    @extend %fontSize14 == 14px;
+*/
+
+@for $i from 12 through 30 {
+    @if $i % 2==0 {
+        %fontSize#{$i} {
+            font-size: $i * 1px;
+        }
+    }
+}
+
+/*
+  定位封装
+  使用：
+    .test {
+        @include position(absolute, top, 50%, left, 50%);
+    }
+*/
+
+@mixin position($type, $vertical, $v1, $horizon, $v2) {
+    position: $type;
+    #{$vertical}: $v1;
+    #{$horizon}: $v2;
+}
+
+/*
+    动画类自动加前缀
+    使用如下：
+    li {
+      @include prefix(transform, (translate(-50%, -50%)));
+      @include prefix(transition, (all .5s));
+    } */
+
+$vendors: webkit,
+moz,
+ms,
+o;
+@mixin prefix($type, $val) {
+    #{$type}: #{$val};
+    @each $v in $vendors {
+        #{"-" + $v + "-" + $type}: #{$val};
+    }
+}
+
+/*
+超出省略显示...
+使用：
+.test{
+    @include txt-hidden()
+} */
+
+@mixin txt-hidden() {
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+@mixin mult-txt-hidden($mult:2){
+	overflow: hidden;
+	text-overflow: ellipsis;
+	/*! autoprefixer: off */
+	-webkit-box-orient: vertical;
+	/* autoprefixer: on */
+	display: -webkit-box;
+	-webkit-line-clamp: $mult;
+}
+/* 垂直渐变渐变函数 */
+
+@mixin gradient-vertical($start-color: #555, $end-color: #333, $start-percent: 0%, $end-percent: 100%) {
+    background-image: -webkit-linear-gradient(top, $start-color $start-percent, $end-color $end-percent); // Safari 5.1-6, Chrome 10+
+    background-image: -moz-linear-gradient(top, $start-color $start-percent, $end-color $end-percent);
+    background-image: -o-linear-gradient(top, $start-color $start-percent, $end-color $end-percent); // Opera 12
+    background-image: -ms-linear-gradient(top, $start-color $start-percent, $end-color $end-percent);
+    background-image: linear-gradient(to bottom, $start-color $start-percent, $end-color $end-percent); // Standard, IE10, Firefox 16+, Opera 12.10+, Safari 7+, Chrome 26+
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{ie-hex-str($start-color)}', endColorstr='#{ie-hex-str($end-color)}', GradientType=0); // IE9 and down
+}
+
+/* 水平渐变函数 */
+
+@mixin gradient-horizontal($start-color: #555, $end-color: #333, $start-percent: 0%, $end-percent: 100%) {
+    background-image: -webkit-linear-gradient(left, $start-color $start-percent, $end-color $end-percent); // Safari 5.1-6, Chrome 10+
+    background-image: -moz-linear-gradient(left, $start-color $start-percent, $end-color $end-percent);
+    background-image: -o-linear-gradient(left, $start-color $start-percent, $end-color $end-percent); // Opera 12
+    background-image: -ms-linear-gradient(top, $start-color $start-percent, $end-color $end-percent);
+    background-image: linear-gradient(to right, $start-color $start-percent, $end-color $end-percent); // Standard, IE10, Firefox 16+, Opera 12.10+, Safari 7+, Chrome 26+
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{ie-hex-str($start-color)}', endColorstr='#{ie-hex-str($end-color)}', GradientType=0); // IE9 and down
+}
+
+/*
+ 快速实现正小三角
+  使用:
+  .arrow{
+     @include regulaTriangle(bottom,10px,#F00);
+    //  向下，10px大小，红色箭头，立马出现  使用@include导入
+    }
+  */
+
+@mixin regulaTriangle($direction, $size, $color) {
+    width: 0;
+    height: 0;
+    line-height: 0;
+    font-size: 0;
+    overflow: hidden;
+    border-width: $size;
+    cursor: pointer;
+    @if $direction==top {
+        border-style: dashed dashed solid dashed;
+        border-color: transparent transparent $color transparent;
+        border-top: none;
+    }
+    @else if $direction==bottom {
+        border-style: solid dashed dashed dashed;
+        border-color: $color transparent transparent transparent;
+        border-bottom: none;
+    }
+    @else if $direction==right {
+        border-style: dashed dashed dashed solid;
+        border-color: transparent transparent transparent $color;
+        border-right: none;
+    }
+    @else if $direction==left {
+        border-style: dashed solid dashed dashed;
+        border-color: transparent $color transparent transparent;
+        border-left: none;
+    }
+}
+
+/*  -----------------------------------直角三角形--------------------------------------
+    right-angledTriangle:直角三角形
+    例子：@include right-angledTriangle(1,red);
+   */
+
+@mixin angledTriangle($derection, $color, $width, $opacity:transparent, $border:dashed) {
+    width: 0;
+    height: 0;
+    line-height: 0;
+    font-size: 0;
+    overflow: hidden;
+    border-width: $width; //向右
+    @if $derection==1 {
+        border-style: $border dashed dashed $border;
+        border-color: $color $opacity $opacity $color;
+    } //向右
+    @if $derection==2 {
+        border-style: $border $border dashed dashed;
+        border-color: $color $color $opacity $opacity;
+    } //向右
+    @if $derection==3 {
+        border-style: dashed $border $border dashed;
+        border-color: $opacity $color $color $opacity;
+    } //向右
+    @if $derection==4 {
+        border-style: dashed dashed $border $border;
+        border-color: $opacity $opacity $color $color;
+    }
+}
+
+/* -----------------------------------透明度-----------------------------------------
+引用例子:@include opacity(0.8); */
+
+@mixin opacity($opacity) {
+    opacity: $opacity;
+    $opacity-ie: $opacity * 100;
+    filter: alpha(opacity=$opacity-ie); //IE8
+}
+
+/* -----------------------------------圆角-----------------------------------------
+    radius:圆角
+    例子：@include radius(24,100%);
+  */
+
+@mixin radius($num:1234, $size: 5px) {
+    // 上右下左都是圆角
+    @if $num==1234 {
+        border-radius: $size; //Opera 10.5, IE 9
+        @include prefix(border-radius, $size);
+    } // 上右都是圆角
+    @if $num==12 {
+        border-top-right-radius: $size;
+        border-top-left-radius: $size;
+        @include prefix(border-top-left-radius, $size);
+        @include prefix(border-top-right-radius, $size);
+    } // 右下圆角
+    @if $num==23 {
+        border-top-right-radius: $size;
+        border-bottom-right-radius: $size;
+        @include prefix(border-top-right-radius, $size);
+        @include prefix(border-bottom-right-radius, $size);
+    } // 下左圆角
+    @if $num==34 {
+        border-bottom-right-radius: $size;
+        border-bottom-left-radius: $size;
+        @include prefix(border-bottom-left-radius, $size);
+        @include prefix(border-bottom-right-radius, $size);
+    } // 上左圆角
+    @if $num==14 {
+        border-top-left-radius: $size;
+        border-bottom-left-radius: $size;
+        @include prefix(border-top-left-radius, $size);
+        @include prefix(border-bottom-left-radius, $size);
+    } // 上下圆角
+    @if $num==13 {
+        border-top-left-radius: $size;
+        border-bottom-right-radius: $size;
+        @include prefix(border-top-left-radius, $size);
+        @include prefix(border-bottom-right-radius, $size);
+    } // 右左圆角
+    @if $num==24 {
+        border-top-right-radius: $size;
+        border-bottom-left-radius: $size;
+        @include prefix(border-top-right-radius, $size);
+        @include prefix(border-bottom-left-radius, $size);
+    }
+}

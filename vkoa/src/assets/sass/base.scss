@@ -1,0 +1,5 @@
+@import './mixin';
+@import './variable';
+*{&:after,&:before{box-sizing: border-box;@include prefix(box-sizing,border-box);} }
+.clearfix{@include clearfix()}
+
